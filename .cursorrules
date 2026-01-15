@@ -1,0 +1,197 @@
+# True Felt - Play by the book
+
+## Project Overview
+
+True Felt is a web-based blackjack game that teaches players optimal "by the book" strategy through real-time hints during gameplay. Features a virtual currency system with daily login bonuses and local storage persistence.
+
+## Tech Stack
+
+- **Framework**: Next.js 16.1.2 (App Router)
+- **UI**: React 19.2.3 with Tailwind CSS v4
+- **Language**: TypeScript 5
+- **State Management**: React Context API + localStorage
+- **Styling**: Tailwind CSS with dark mode support
+
+## Code Style
+
+### Formatting
+
+- Use double quotes (`"`) for strings (not single quotes)
+- Use semicolons
+- Prefer explicit type annotations
+- Use meaningful variable and function names
+- Format with consistent indentation (2 spaces)
+
+### File Organization
+
+```
+app/
+├── components/     # React components (Card, Hand, GameTable, etc.)
+├── context/        # React Context providers (GameContext)
+├── lib/            # Utility functions (gameEngine, strategy, currency, storage)
+├── types/          # TypeScript type definitions
+├── game/           # Game page route
+└── page.tsx        # Home page
+```
+
+### Naming Conventions
+
+- **Components**: PascalCase (e.g., `GameTable.tsx`, `BettingControls.tsx`)
+- **Functions**: camelCase (e.g., `initializeGame`, `calculateResults`)
+- **Types/Interfaces**: PascalCase (e.g., `GameState`, `Hand`, `Card`)
+- **Constants**: UPPER_SNAKE_CASE (e.g., `DEFAULT_BALANCE`, `MIN_BET`)
+
+## Key Patterns
+
+### Game State Management
+
+- Use `GameContext` for global game state
+- Store currency and stats in localStorage via `storage.ts` utilities
+- Game state is immutable - always return new state objects, never mutate
+
+### Component Structure
+
+- All components are client components (`"use client"`)
+- Use TypeScript interfaces for all props
+- Prefer functional components with hooks
+- Keep components focused and single-purpose
+
+### Game Logic
+
+- Game engine functions are pure (no side effects)
+- All game state changes go through `gameEngine.ts` functions
+- Strategy recommendations come from `strategy.ts` based on basic strategy charts
+- Hand evaluation is done via `evaluateHand()` function
+
+### Currency System
+
+- Starting balance: 10,000 chips
+- Daily bonus: 1,000 chips (24-hour cooldown)
+- Minimum bet: 10 chips
+- Maximum bet: 5,000 chips
+- All currency operations go through `currency.ts` and `storage.ts`
+
+## Important Rules
+
+### Type Safety
+
+- Always use TypeScript types - avoid `any` when possible
+- Define types in `app/types/game.ts` for shared types
+- Use type guards for runtime validation
+
+### State Updates
+
+- Never mutate game state directly - always create new objects
+- Use spread operator (`...`) for shallow copies
+- For arrays, use `[...array]` or `array.map()`
+
+### Error Handling
+
+- Validate inputs (bet amounts, game actions)
+- Use try-catch for localStorage operations
+- Provide fallback values for missing data
+- Log errors to console for debugging
+
+### Mobile Responsiveness
+
+- All interactive elements must have minimum 44px touch targets
+- Use responsive Tailwind classes (`sm:`, `md:`, etc.)
+- Test on mobile viewports
+- Use flexbox/grid for responsive layouts
+
+### Accessibility
+
+- Use semantic HTML elements
+- Provide proper labels for form inputs
+- Ensure sufficient color contrast
+- Support keyboard navigation
+
+## Game-Specific Rules
+
+### Blackjack Rules
+
+- 6-8 deck shoe
+- Dealer stands on soft 17
+- Double down on any two cards
+- Double after split (DAS) allowed
+- Split up to 4 hands
+- Blackjack pays 3:2
+- Late surrender available
+
+### Strategy Implementation
+
+- Basic strategy is based on 6-8 deck, S17, DAS rules
+- Strategy recommendations must match standard basic strategy charts
+- Show hints during player's turn only
+- Track strategy adherence for statistics
+
+### Betting
+
+- Track bets per hand (for splits and doubles)
+- Use `handBets` array to track individual hand bets
+- Calculate winnings per hand, then sum total
+- Handle edge cases: blackjack, bust, push, surrender
+
+## Testing Considerations
+
+- Test immediate blackjack scenarios
+- Test split hands with different outcomes
+- Test double down scenarios
+- Test edge cases (bust, push, surrender)
+- Test currency persistence across sessions
+- Test daily bonus cooldown logic
+
+## Common Patterns to Follow
+
+### Creating New Components
+
+```typescript
+"use client";
+
+import type { SomeType } from "@/app/types/game";
+
+interface ComponentProps {
+  prop1: string;
+  prop2: number;
+}
+
+export default function Component({ prop1, prop2 }: ComponentProps) {
+  // Component logic
+}
+```
+
+### Updating Game State
+
+```typescript
+// ✅ Good - immutable update
+const newState = {
+  ...gameState,
+  phase: "game-over",
+  result: "win",
+};
+
+// ❌ Bad - mutation
+gameState.phase = "game-over";
+```
+
+### Accessing Context
+
+```typescript
+const { gameState, balance, makeMove } = useGame();
+```
+
+## Dependencies
+
+- `next`: 16.1.2
+- `react`: 19.2.3
+- `react-dom`: 19.2.3
+- `typescript`: ^5
+- `tailwindcss`: ^4
+
+## Notes
+
+- All game logic should be deterministic and testable
+- Strategy hints are educational - show optimal play
+- Currency system makes the game feel "real" to users
+- Local storage is used for persistence (no backend required)
+- Mobile-first design is essential
